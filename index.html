@@ -14,8 +14,24 @@
     <div class="main-wrapper">
         <main>
             <h1 class="title">Countdown</h1>
-            <span id="display"></span>
-            <div class="controls"></div>
+            <!-- <svg viewbox="0 0 100 20">
+                <text x="50" y="10" id="display" text-anchor="middle"></text>
+            </svg> -->
+            <!-- <div id="display"></div> -->
+            <object id="display-svg" data="images/chrono.svg" type="image/svg+xml"></object>
+            <div class="controls">
+                <svg id="play-pause-btn" viewBox="0 0 10 10" data-role="play">
+                    <path d="m 0 0 l 5 2.5 l 0 5 l -5 2.5 z M 5 2.5 l 5 2.5 l 0 0 l -5 2.5 z">
+                        <animate begin="indefinite" class="pause-animation" attributeName="d"
+                        to="m 0 0 l 4 0 l 0 10 l -4 0 z M 6 0 l 4 0 l 0 10 l -4 0 z" fill="freeze" dur="0.2s" />
+                        <animate begin="indefinite" class="play-animation" attributeName="d"
+                        to="m 0 0 l 5 2.5 l 0 5 l -5 2.5 z M 5 2.5 l 5 2.5 l 0 0 l -5 2.5 z" fill="freeze" dur="0.2s" />
+                    </path>
+                </svg>
+                <svg viewBox="0 0 10 10" data-role="stop">
+                    <rect x="0" y="0" width="10" height="10" />
+                </svg>
+            </div>
         </main>
         <footer>
             We don't have social networks, nor do we care about your feedback.

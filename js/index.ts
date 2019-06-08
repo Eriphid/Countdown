@@ -1,30 +1,42 @@
+interface SVGAnimateElement {
+    beginElement(): void
+}
+
 class Ticker {
+    onNewFrame: (callback: (timestamp: DOMHighResTimeStamp) => any) => void
+    paused!: boolean
+    pause: () => void
+    resume: () => void
+
     constructor() {
-        let new_frame_callbacks = [];
+        let new_frame_callbacks = []
         let paused = false;
+
         let req_id = null;
-        const frame_handler = (timestamp) => {
+        const frame_handler = (timestamp: DOMHighResTimeStamp) => {
             req_id = requestAnimationFrame(frame_handler);
-            new_frame_callbacks.forEach(calback => calback());
-        };
+            new_frame_callbacks.forEach(calback => calback())
+        }
         req_id = requestAnimationFrame(frame_handler);
+
         this.onNewFrame = (callback) => {
             new_frame_callbacks.push(callback);
         };
+
         this.pause = () => {
             paused = true;
             cancelAnimationFrame(req_id);
             req_id = null;
-        };
+        }
         this.resume = () => {
-            if (req_id)
-                return;
+            if (req_id) return;
             paused = false;
             req_id = requestAnimationFrame(frame_handler);
-        };
+        }
+
         Object.defineProperty(this, "paused", {
             get: () => paused,
-            set: (value) => {
+            set: (value: boolean) => {
                 if (value === this.paused)
                     return;
                 value ? this.pause() : this.resume();
@@ -32,22 +44,46 @@ class Ticker {
         });
     }
 }
+
 class Countdown {
+    element: HTMLElement
+
+    onupdate = (time: number) => { }
+
+    /**start the countdown
+    @param value time in milliseconds
+    */
+    start: (value: number) => void
+    duration: number
+    value: number
+
+    resume: () => void
+    pause: () => void
+    stop() {
+        this.pause();
+        this.value = this.duration;
+    }
+
     constructor() {
-        this.onupdate = (time) => { };
-        let ticker;
-        let timestamp;
+        let ticker: Ticker;
+        let timestamp: DOMHighResTimeStamp;
+
         const properties = {
-            value: null,
-            duration: null
-        };
-        this.start = (value) => {
+            value: null as number,
+            duration: null as number
+        }
+
+        this.start = (value: number) => {
             ticker = new Ticker();
+
             properties.duration = value;
             this.value = value;
+
             this.onupdate(value);
+
             timestamp = performance.now();
             const frame_handler = () => {
+
                 const old_timestamp = timestamp;
                 timestamp = performance.now();
                 this.value = this.value - (timestamp - old_timestamp);
@@ -56,22 +92,25 @@ class Countdown {
                     ticker.pause();
                 }
             };
+
             ticker.onNewFrame(frame_handler);
-        };
+        }
         let pause_timestamp = null;
+
         this.pause = () => {
             if (ticker) {
                 ticker.pause();
                 pause_timestamp = performance.now();
             }
-        };
+        }
         this.resume = () => {
             if (pause_timestamp && ticker) {
                 ticker.resume();
                 timestamp += performance.now() - pause_timestamp;
                 pause_timestamp = null;
             }
-        };
+        }
+
         Object.defineProperties(this, {
             duration: {
                 get: () => properties.duration
@@ -83,57 +122,64 @@ class Countdown {
                     this.onupdate(properties.value);
                 }
             }
-        });
-    }
-    stop() {
-        this.pause();
-        this.value = this.duration;
+        })
     }
 }
+
 /**
 @param value time in ms
 */
-function update_display(value) {
-    const svg = document.getElementById("display-svg");
+function update_display(value: number) {
+    const svg = document.getElementById("display-svg") as HTMLObjectElement;
     const display = svg.contentDocument.getElementById("display");
-    function x_digit(value, n) {
+
+    function x_digit(value: number, n: number) {
         return Math.floor(value).toString().padStart(n, "0");
     }
     const ms = Math.round(value);
     let s = ms / 1000, m = s / 60, h = m / 60;
     display.innerHTML = `${x_digit(h, 2)}:${x_digit(m, 2)}:${x_digit(s, 2)}.${x_digit((ms % 1000) / 10, 2)}`;
 }
+
+
 function initialization() {
     const countdown = new Countdown();
+
     countdown.start(10000);
     countdown.onupdate = update_display;
+
     const controls = document.body.querySelector(".controls");
-    function update_play_pause_btn_state(role) {
+
+
+    function update_play_pause_btn_state(role: "play" | "pause") {
         const btn = document.getElementById("play-pause-btn");
         if (btn.dataset.role !== role) {
-            btn.querySelectorAll(`.${role}-animation`).forEach(ani => ani.beginElement());
+            btn.querySelectorAll<SVGAnimateElement>(`.${role}-animation`).forEach(ani => ani.beginElement());
             btn.dataset.role = role;
         }
     }
+
     const control_handlers = {
-        play: (el) => {
+        play: (el: HTMLElement) => {
             update_play_pause_btn_state("pause");
             countdown.resume();
         },
-        pause: (el) => {
+        pause: (el: HTMLElement) => {
             update_play_pause_btn_state("play");
             countdown.pause();
         },
-        stop: (el) => {
-            countdown.stop();
+        stop: (el: HTMLElement) => {
+            countdown.stop()
             update_play_pause_btn_state("play");
         }
-    };
+    }
+
     controls.addEventListener("click", (ev) => {
-        const target = ev.target.closest("svg");
+        const target = (ev.target as HTMLElement).closest("svg");
         if (target.dataset.role) {
             control_handlers[target.dataset.role](target);
         }
-    });
+    })
 }
+
 initialization();

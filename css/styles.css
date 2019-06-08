@@ -53,21 +53,30 @@ main {
     flex-direction: row;
     justify-content: center;
     align-items: center;
+    padding: 5px;
+
+    /* background-color: #ccc;
+    border-radius: 20px; */
 }
 .controls svg
 {
     flex-shrink: 0;
     flex-basis: 25px;
     /* width: 10px; */
-    margin: 10px;
+    margin: 5px;
+    fill: aqua;
 
-    transition: fill 0.2s, stroke 0.3s;
+    transition: /* border 0.3s, */ box-shadow 0.3s;
+    padding: 10px;
+    border: 1px solid white;
+    border-radius: 10px;
 }
 
 .controls svg:hover
 {
-    fill: aliceblue;
-    stroke: yellowgreen;
+    /* border-color: aqua; */
+    box-shadow: 0 0 10px aqua, 0 0 20px aqua;
+
 }
 
 
