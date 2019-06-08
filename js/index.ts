@@ -59,10 +59,7 @@ class Countdown {
 
     resume: () => void
     pause: () => void
-    stop() {
-        this.pause();
-        this.value = this.duration;
-    }
+    stop: () => void
 
     constructor() {
         let ticker: Ticker;
@@ -98,10 +95,15 @@ class Countdown {
         let pause_timestamp = null;
 
         this.pause = () => {
-            if (ticker) {
+            if (!pause_timestamp && ticker) {
                 ticker.pause();
                 pause_timestamp = performance.now();
             }
+        }
+
+        this.stop = () => {
+            this.pause();
+            this.value = this.duration;
         }
         this.resume = () => {
             if (pause_timestamp && ticker) {
@@ -131,7 +133,11 @@ class Countdown {
 */
 function update_display(value: number) {
     const svg = document.getElementById("display-svg") as HTMLObjectElement;
+    if (!svg.contentDocument)
+        return;
     const display = svg.contentDocument.getElementById("display");
+    if (!display)
+        return;
 
     function x_digit(value: number, n: number) {
         return Math.floor(value).toString().padStart(n, "0");

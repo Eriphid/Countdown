@@ -60,10 +60,14 @@ class Countdown {
         };
         let pause_timestamp = null;
         this.pause = () => {
-            if (ticker) {
+            if (!pause_timestamp && ticker) {
                 ticker.pause();
                 pause_timestamp = performance.now();
             }
+        };
+        this.stop = () => {
+            this.pause();
+            this.value = this.duration;
         };
         this.resume = () => {
             if (pause_timestamp && ticker) {
@@ -85,17 +89,17 @@ class Countdown {
             }
         });
     }
-    stop() {
-        this.pause();
-        this.value = this.duration;
-    }
 }
 /**
 @param value time in ms
 */
 function update_display(value) {
     const svg = document.getElementById("display-svg");
+    if (!svg.contentDocument)
+        return;
     const display = svg.contentDocument.getElementById("display");
+    if (!display)
+        return;
     function x_digit(value, n) {
         return Math.floor(value).toString().padStart(n, "0");
     }
