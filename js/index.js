@@ -35,46 +35,69 @@ class Ticker {
 class Countdown {
     constructor() {
         this.onupdate = (time) => { };
+        this.onstatechanged = (state) => { };
         let ticker;
         let timestamp;
         const properties = {
             value: null,
-            duration: null
+            duration: null,
+            state: "stopped"
         };
-        this.start = (value) => {
+        const initialize_ticker = () => {
             ticker = new Ticker();
-            properties.duration = value;
-            this.value = value;
-            this.onupdate(value);
-            timestamp = performance.now();
             const frame_handler = () => {
                 const old_timestamp = timestamp;
                 timestamp = performance.now();
                 this.value = this.value - (timestamp - old_timestamp);
                 if (this.value <= 0) {
                     this.value = 0;
-                    ticker.pause();
+                    this.pause();
+                    timestamp = null;
                 }
             };
             ticker.onNewFrame(frame_handler);
+        };
+        this.start = (value) => {
+            if (!ticker)
+                initialize_ticker();
+            properties.duration = value;
+            this.value = value;
+            this.onstatechanged("runing");
+            this.onupdate(value);
+            timestamp = performance.now();
         };
         let pause_timestamp = null;
         this.pause = () => {
             if (!pause_timestamp && ticker) {
                 ticker.pause();
                 pause_timestamp = performance.now();
+                this.state = "paused";
             }
         };
         this.stop = () => {
             this.pause();
+            pause_timestamp = null;
             this.value = this.duration;
+            this.state = "stopped";
         };
         this.resume = () => {
-            if (pause_timestamp && ticker) {
+            if (!this.value)
+                return false;
+            if (ticker) {
                 ticker.resume();
-                timestamp += performance.now() - pause_timestamp;
-                pause_timestamp = null;
+                if (pause_timestamp) {
+                    timestamp += performance.now() - pause_timestamp;
+                    pause_timestamp = null;
+                }
+                else if (this.duration) {
+                    this.start(this.duration);
+                }
             }
+            else {
+                return false;
+            }
+            this.state = "runing";
+            return true;
         };
         Object.defineProperties(this, {
             duration: {
@@ -85,6 +108,13 @@ class Countdown {
                 set: value => {
                     properties.value = Math.max(0, Math.min(value, this.duration));
                     this.onupdate(properties.value);
+                }
+            },
+            state: {
+                get: () => properties.state,
+                set: (value) => {
+                    properties.state = value;
+                    this.onstatechanged(value);
                 }
             }
         });
@@ -100,16 +130,16 @@ function update_display(value) {
     const display = svg.contentDocument.getElementById("display");
     if (!display)
         return;
+    const tspan = display.querySelector("tspan");
     function x_digit(value, n) {
         return Math.floor(value).toString().padStart(n, "0");
     }
     const ms = Math.round(value);
     let s = ms / 1000, m = s / 60, h = m / 60;
-    display.innerHTML = `${x_digit(h, 2)}:${x_digit(m, 2)}:${x_digit(s, 2)}.${x_digit((ms % 1000) / 10, 2)}`;
+    tspan.innerHTML = `${x_digit(h, 2)}:${x_digit(m, 2)}:${x_digit(s, 2)}.${x_digit((ms % 1000) / 10, 2)}`;
 }
 function initialization() {
     const countdown = new Countdown();
-    countdown.start(10000);
     countdown.onupdate = update_display;
     const controls = document.body.querySelector(".controls");
     function update_play_pause_btn_state(role) {
@@ -121,23 +151,34 @@ function initialization() {
     }
     const control_handlers = {
         play: (el) => {
-            update_play_pause_btn_state("pause");
             countdown.resume();
         },
         pause: (el) => {
-            update_play_pause_btn_state("play");
             countdown.pause();
         },
         stop: (el) => {
             countdown.stop();
-            update_play_pause_btn_state("play");
+        }
+    };
+    countdown.onstatechanged = (state) => {
+        switch (state) {
+            case "runing":
+                update_play_pause_btn_state("pause");
+                break;
+            case "paused":
+            case "stopped":
+                update_play_pause_btn_state("play");
+                break;
         }
     };
     controls.addEventListener("click", (ev) => {
+        if (ev.target === controls)
+            return;
         const target = ev.target.closest("svg");
-        if (target.dataset.role) {
+        if (target && target.dataset.role) {
             control_handlers[target.dataset.role](target);
         }
     });
+    countdown.start(10000);
 }
 initialization();
