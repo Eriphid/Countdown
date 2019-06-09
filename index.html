@@ -6,9 +6,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Countdown</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/snap.svg/0.5.1/snap.svg-min.js" defer></script>
+    <script src="js/stopwatch.js" defer></script>
     <script src="js/index.js" defer></script>
     <link rel="stylesheet" href="css/styles.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/snap.svg/0.5.1/snap.svg-min.js" async></script>
 </head>
 
 <body>
@@ -16,7 +17,8 @@
         <main>
             <h1 class="title">Countdown</h1>
             <div id="countdown">
-                <object id="display" data="images/stopwatch.svg" type="image/svg+xml"></object>
+                <div id="display"></div>
+                <!-- <object id="display" data="images/stopwatch.svg" type="image/svg+xml"></object> -->
                 <div class="controls">
                     <button data-role="play"></button>
                     <button data-role="stop"></button>

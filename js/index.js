@@ -77,7 +77,7 @@ class Countdown {
                 initialize_ticker();
             properties.duration = value;
             this.value = value;
-            this.onstatechanged.call("runing");
+            this.state = "runing";
             this.onupdate.call(value);
             timestamp = performance.now();
         };
@@ -92,8 +92,8 @@ class Countdown {
         this.stop = () => {
             this.pause();
             pause_timestamp = null;
-            this.value = this.duration;
             this.state = "stopped";
+            this.value = this.duration;
         };
         this.resume = () => {
             if (!this.value)
@@ -135,27 +135,12 @@ class Countdown {
         });
     }
 }
-/**
-@param value time in ms
-*/
-function update_display(value) {
-    const svg = document.getElementById("display");
-    if (!svg.contentDocument)
-        return;
-    const display = svg.contentDocument.getElementById("display");
-    if (!display)
-        return;
-    function x_digit(value, n) {
-        return Math.floor(value).toString().padStart(n, "0");
-    }
-    const ms = Math.round(value);
-    let s = ms / 1000, m = s / 60, h = m / 60;
-    display.innerHTML = `${x_digit(h, 2)}:${x_digit(m, 2)}:${x_digit(s, 2)}.${x_digit((ms % 1000) / 10, 2)}`;
-}
 function initialize_controls() {
     const control_group = document.body.querySelector(".controls");
     let btnmap = new Map();
     function set_role(btn, role) {
+        if (btn.btn.dataset.role === role)
+            return;
         btn.btn.dataset.role = role;
         btn.shape.animate({
             d: SVGPath[role]
@@ -178,7 +163,7 @@ function initialize_controls() {
             const svg_element = btn.appendChild(document.createElementNS("http://www.w3.org/2000/svg", "svg"));
             const role = btn.dataset.role;
             const s = Snap(svg_element);
-            btn.addEventListener("click", () => handlers[role]());
+            btn.addEventListener("click", () => handlers[btn.dataset.role]());
             s.attr({
                 viewBox: "0 0 10 10"
             });
@@ -192,13 +177,13 @@ function initialize_controls() {
     }
     countdown.onstatechanged.add((state) => {
         const play = btnmap.get("play");
-        play.btn.disabled = (countdown.value === 0);
         set_role(play, state === "runing" ? "pause" : "play");
     });
+    countdown.onupdate.add(value => btnmap.get("play").btn.disabled = value <= 0);
 }
 function initialization() {
     countdown = new Countdown();
-    countdown.onupdate.add(update_display);
+    const stopwatch = new Stopwatch(document.getElementById("display"));
     initialize_controls();
     countdown.start(10000);
 }
