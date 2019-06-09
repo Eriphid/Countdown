@@ -1,0 +1,23 @@
+{
+  "name": "countdown",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Eriphid/Countdown.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Eriphid/Countdown/issues"
+  },
+  "homepage": "https://github.com/Eriphid/Countdown#readme",
+  "dependencies": {
+    "@types/gsap": "^1.20.2",
+    "@types/snapsvg": "^0.5.0"
+  }
+}

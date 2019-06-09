@@ -1,8 +1,22 @@
+declare var TweenLite: typeof import("gsap").TweenLite;
+declare var TimelineLite: typeof import("gsap").TimelineLite;
+declare var Snap: typeof import("snapsvg");
+
 interface SVGAnimateElement {
     beginElement(): void
 }
 
+interface NodeListOf<TNode extends Node> {
+    [Symbol.iterator](): Iterator<TNode>
+}
+
 var countdown: Countdown;
+
+const SVGPath = {
+    play: "m 0 0 l 5 2.5 l 0 5 l -5 2.5 z M 5 2.5 l 5 2.5 l 0 0 l -5 2.5 z",
+    pause: "m 0 0 l 4 0 l 0 10 l -4 0 z M 6 0 l 4 0 l 0 10 l -4 0 z",
+    stop: "m 0 0 l 10 0 l 0 10 l -10 0 z"
+}
 
 class CallbackGroup<Callback extends Function>
 {
@@ -194,18 +208,24 @@ function update_display(value: number) {
     display.innerHTML = `${x_digit(h, 2)}:${x_digit(m, 2)}:${x_digit(s, 2)}.${x_digit((ms % 1000) / 10, 2)}`;
 }
 
-function initialize_controls() {
-    const controls = document.body.querySelector(".controls");
+interface Control {
+    btn: HTMLButtonElement,
+    snap: Snap.Element,
+    shape: Snap.Element
+}
 
-    function update_play_pause_btn_state(role: "play" | "pause") {
-        const btn = document.getElementById("play-pause-btn");
-        if (btn.dataset.role !== role) {
-            btn.querySelectorAll<SVGAnimateElement>(`.${role}-animation`).forEach(ani => ani.beginElement());
-            btn.dataset.role = role;
-        }
+function initialize_controls() {
+    const control_group = document.body.querySelector(".controls");
+    let btnmap = new Map<string, Control>();
+
+    function set_role(btn: Control, role: keyof typeof SVGPath) {
+        btn.btn.dataset.role = role;
+        btn.shape.animate({
+            d: SVGPath[role]
+        }, 300, mina.linear);
     }
 
-    const control_handlers = {
+    const handlers = {
         play: (el: HTMLElement) => {
             countdown.resume()
         },
@@ -217,25 +237,31 @@ function initialize_controls() {
         }
     }
 
-    countdown.onstatechanged.add((state) => {
-        switch (state) {
-            case "runing":
-                update_play_pause_btn_state("pause");
-                break;
-            case "paused":
-            case "stopped":
-                update_play_pause_btn_state("play");
-                break;
-        }
-    })
+    {
+        const buttons = control_group.querySelectorAll<HTMLButtonElement>("button[data-role]");
+        for (let btn of buttons) {
+            const svg_element = btn.appendChild(document.createElementNS("http://www.w3.org/2000/svg", "svg"));
+            const role = btn.dataset.role;
+            const s = Snap(svg_element);
 
-    controls.addEventListener("click", (ev) => {
-        if (ev.target === controls)
-            return;
-        const target = (ev.target as HTMLElement).closest("button");
-        if (target && target.dataset.role) {
-            control_handlers[target.dataset.role](target);
+            btn.addEventListener("click", () => handlers[role]());
+
+            s.attr({
+                viewBox: "0 0 10 10"
+            })
+            const shape = s.path(SVGPath[role]);
+            btnmap.set(role, {
+                btn: btn,
+                snap: s,
+                shape: shape
+            });
         }
+    }
+
+    countdown.onstatechanged.add((state) => {
+        const play = btnmap.get("play");
+        play.btn.disabled = (countdown.value === 0);
+        set_role(play, state === "runing" ? "pause" : "play");
     })
 }
 

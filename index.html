@@ -6,8 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Countdown</title>
-    <script src="js/index.js" defer=""></script>
+    <script src="js/index.js" defer></script>
     <link rel="stylesheet" href="css/styles.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/snap.svg/0.5.1/snap.svg-min.js" async></script>
 </head>
 
 <body>
@@ -17,21 +18,8 @@
             <div id="countdown">
                 <object id="display" data="images/stopwatch.svg" type="image/svg+xml"></object>
                 <div class="controls">
-                    <button id="play-pause-btn" data-role="play">
-                        <svg viewBox="0 0 10 10">
-                            <path d="m 0 0 l 5 2.5 l 0 5 l -5 2.5 z M 5 2.5 l 5 2.5 l 0 0 l -5 2.5 z">
-                                <animate begin="indefinite" class="pause-animation" attributeName="d"
-                                to="m 0 0 l 4 0 l 0 10 l -4 0 z M 6 0 l 4 0 l 0 10 l -4 0 z" fill="freeze" dur="0.2s" />
-                                <animate begin="indefinite" class="play-animation" attributeName="d"
-                                to="m 0 0 l 5 2.5 l 0 5 l -5 2.5 z M 5 2.5 l 5 2.5 l 0 0 l -5 2.5 z" fill="freeze" dur="0.2s" />
-                            </path>
-                        </svg>
-                    </button>
-                    <button data-role="stop">
-                        <svg viewBox="0 0 10 10">
-                            <rect x="0" y="0" width="10" height="10" />
-                        </svg>
-                    </button>
+                    <button data-role="play"></button>
+                    <button data-role="stop"></button>
                 </div>
             </div>
         </main>
