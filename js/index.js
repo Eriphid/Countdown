@@ -130,13 +130,12 @@ function update_display(value) {
     const display = svg.contentDocument.getElementById("display");
     if (!display)
         return;
-    const tspan = display.querySelector("tspan");
     function x_digit(value, n) {
         return Math.floor(value).toString().padStart(n, "0");
     }
     const ms = Math.round(value);
     let s = ms / 1000, m = s / 60, h = m / 60;
-    tspan.innerHTML = `${x_digit(h, 2)}:${x_digit(m, 2)}:${x_digit(s, 2)}.${x_digit((ms % 1000) / 10, 2)}`;
+    display.innerHTML = `${x_digit(h, 2)}:${x_digit(m, 2)}:${x_digit(s, 2)}.${x_digit((ms % 1000) / 10, 2)}`;
 }
 function initialization() {
     const countdown = new Countdown();
