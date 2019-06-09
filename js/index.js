@@ -1,16 +1,26 @@
+var countdown;
+class CallbackGroup {
+    constructor(thisArg = null) {
+        this.callbacks = [];
+        this.thisArg = thisArg;
+    }
+    call(...args) {
+        this.callbacks.forEach(callback => callback.call(this.thisArg, ...args));
+    }
+    add(...callbacks) {
+        this.callbacks.push(...callbacks);
+    }
+}
 class Ticker {
     constructor() {
-        let new_frame_callbacks = [];
+        this.onnewframe = new CallbackGroup(this);
         let paused = false;
         let req_id = null;
         const frame_handler = (timestamp) => {
             req_id = requestAnimationFrame(frame_handler);
-            new_frame_callbacks.forEach(calback => calback());
+            this.onnewframe.call(timestamp);
         };
         req_id = requestAnimationFrame(frame_handler);
-        this.onNewFrame = (callback) => {
-            new_frame_callbacks.push(callback);
-        };
         this.pause = () => {
             paused = true;
             cancelAnimationFrame(req_id);
@@ -34,8 +44,8 @@ class Ticker {
 }
 class Countdown {
     constructor() {
-        this.onupdate = (time) => { };
-        this.onstatechanged = (state) => { };
+        this.onupdate = new CallbackGroup(this);
+        this.onstatechanged = new CallbackGroup(this);
         let ticker;
         let timestamp;
         const properties = {
@@ -55,15 +65,15 @@ class Countdown {
                     timestamp = null;
                 }
             };
-            ticker.onNewFrame(frame_handler);
+            ticker.onnewframe.add(frame_handler);
         };
         this.start = (value) => {
             if (!ticker)
                 initialize_ticker();
             properties.duration = value;
             this.value = value;
-            this.onstatechanged("runing");
-            this.onupdate(value);
+            this.onstatechanged.call("runing");
+            this.onupdate.call(value);
             timestamp = performance.now();
         };
         let pause_timestamp = null;
@@ -107,14 +117,14 @@ class Countdown {
                 get: () => properties.value,
                 set: value => {
                     properties.value = Math.max(0, Math.min(value, this.duration));
-                    this.onupdate(properties.value);
+                    this.onupdate.call(properties.value);
                 }
             },
             state: {
                 get: () => properties.state,
                 set: (value) => {
                     properties.state = value;
-                    this.onstatechanged(value);
+                    this.onstatechanged.call(value);
                 }
             }
         });
@@ -124,7 +134,7 @@ class Countdown {
 @param value time in ms
 */
 function update_display(value) {
-    const svg = document.getElementById("display-svg");
+    const svg = document.getElementById("display");
     if (!svg.contentDocument)
         return;
     const display = svg.contentDocument.getElementById("display");
@@ -137,9 +147,7 @@ function update_display(value) {
     let s = ms / 1000, m = s / 60, h = m / 60;
     display.innerHTML = `${x_digit(h, 2)}:${x_digit(m, 2)}:${x_digit(s, 2)}.${x_digit((ms % 1000) / 10, 2)}`;
 }
-function initialization() {
-    const countdown = new Countdown();
-    countdown.onupdate = update_display;
+function initialize_controls() {
     const controls = document.body.querySelector(".controls");
     function update_play_pause_btn_state(role) {
         const btn = document.getElementById("play-pause-btn");
@@ -159,7 +167,7 @@ function initialization() {
             countdown.stop();
         }
     };
-    countdown.onstatechanged = (state) => {
+    countdown.onstatechanged.add((state) => {
         switch (state) {
             case "runing":
                 update_play_pause_btn_state("pause");
@@ -169,15 +177,20 @@ function initialization() {
                 update_play_pause_btn_state("play");
                 break;
         }
-    };
+    });
     controls.addEventListener("click", (ev) => {
         if (ev.target === controls)
             return;
-        const target = ev.target.closest("svg");
+        const target = ev.target.closest("button");
         if (target && target.dataset.role) {
             control_handlers[target.dataset.role](target);
         }
     });
+}
+function initialization() {
+    countdown = new Countdown();
+    countdown.onupdate.add(update_display);
+    initialize_controls();
     countdown.start(10000);
 }
 initialization();

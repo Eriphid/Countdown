@@ -2,26 +2,40 @@ interface SVGAnimateElement {
     beginElement(): void
 }
 
+var countdown: Countdown;
+
+class CallbackGroup<Callback extends Function>
+{
+    thisArg: any
+    callbacks: Callback[] = []
+    call(...args: any[]) {
+        this.callbacks.forEach(callback => callback.call(this.thisArg, ...args));
+    }
+
+    add(...callbacks: Callback[]) {
+        this.callbacks.push(...callbacks);
+    }
+
+    constructor(thisArg = null) {
+        this.thisArg = thisArg;
+    }
+}
+
 class Ticker {
-    onNewFrame: (callback: (timestamp: DOMHighResTimeStamp) => any) => void
+    onnewframe = new CallbackGroup<(timestamp: DOMHighResTimeStamp) => any>(this)
     paused!: boolean
     pause: () => void
     resume: () => void
 
     constructor() {
-        let new_frame_callbacks = []
         let paused = false;
 
         let req_id = null;
         const frame_handler = (timestamp: DOMHighResTimeStamp) => {
             req_id = requestAnimationFrame(frame_handler);
-            new_frame_callbacks.forEach(calback => calback())
+            this.onnewframe.call(timestamp);
         }
         req_id = requestAnimationFrame(frame_handler);
-
-        this.onNewFrame = (callback) => {
-            new_frame_callbacks.push(callback);
-        };
 
         this.pause = () => {
             paused = true;
@@ -48,8 +62,8 @@ class Ticker {
 class Countdown {
     element: HTMLElement
 
-    onupdate = (time: number) => { }
-    onstatechanged = (state: "runing" | "paused" | "stopped") => { }
+    onupdate = new CallbackGroup<(time: DOMHighResTimeStamp) => any>(this);
+    onstatechanged = new CallbackGroup<(state: "runing" | "paused" | "stopped") => any>(this);
 
     /**start the countdown
     @param value time in milliseconds
@@ -89,7 +103,7 @@ class Countdown {
                 }
             };
 
-            ticker.onNewFrame(frame_handler);
+            ticker.onnewframe.add(frame_handler);
         }
 
         this.start = (value: number) => {
@@ -98,8 +112,8 @@ class Countdown {
             properties.duration = value;
             this.value = value;
 
-            this.onstatechanged("runing")
-            this.onupdate(value);
+            this.onstatechanged.call("runing")
+            this.onupdate.call(value);
 
             timestamp = performance.now();
         }
@@ -147,14 +161,14 @@ class Countdown {
                 get: () => properties.value,
                 set: value => {
                     properties.value = Math.max(0, Math.min(value, this.duration));
-                    this.onupdate(properties.value);
+                    this.onupdate.call(properties.value);
                 }
             },
             state: {
                 get: () => properties.state,
                 set: (value) => {
                     properties.state = value;
-                    this.onstatechanged(value);
+                    this.onstatechanged.call(value);
                 }
             }
         })
@@ -165,7 +179,7 @@ class Countdown {
 @param value time in ms
 */
 function update_display(value: number) {
-    const svg = document.getElementById("display-svg") as HTMLObjectElement;
+    const svg = document.getElementById("display") as HTMLObjectElement;
     if (!svg.contentDocument)
         return;
     const display = svg.contentDocument.getElementById("display");
@@ -180,14 +194,8 @@ function update_display(value: number) {
     display.innerHTML = `${x_digit(h, 2)}:${x_digit(m, 2)}:${x_digit(s, 2)}.${x_digit((ms % 1000) / 10, 2)}`;
 }
 
-
-function initialization() {
-    const countdown = new Countdown();
-
-    countdown.onupdate = update_display;
-
+function initialize_controls() {
     const controls = document.body.querySelector(".controls");
-
 
     function update_play_pause_btn_state(role: "play" | "pause") {
         const btn = document.getElementById("play-pause-btn");
@@ -209,7 +217,7 @@ function initialization() {
         }
     }
 
-    countdown.onstatechanged = (state) => {
+    countdown.onstatechanged.add((state) => {
         switch (state) {
             case "runing":
                 update_play_pause_btn_state("pause");
@@ -219,17 +227,23 @@ function initialization() {
                 update_play_pause_btn_state("play");
                 break;
         }
-    }
+    })
 
     controls.addEventListener("click", (ev) => {
         if (ev.target === controls)
             return;
-        const target = (ev.target as HTMLElement).closest("svg");
+        const target = (ev.target as HTMLElement).closest("button");
         if (target && target.dataset.role) {
             control_handlers[target.dataset.role](target);
         }
     })
+}
 
+
+function initialization() {
+    countdown = new Countdown();
+    countdown.onupdate.add(update_display);
+    initialize_controls();
     countdown.start(10000);
 }
 
