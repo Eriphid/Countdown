@@ -188,7 +188,6 @@ function initialize_controls() {
 }
 function initialization() {
     countdown = new Countdown();
-    const stopwatch = new Stopwatch(document.getElementById("display"));
     initialize_controls();
     countdown.start(10000);
 }

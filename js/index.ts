@@ -1,5 +1,7 @@
-declare var TweenLite: typeof import("gsap").TweenLite;
-declare var TimelineLite: typeof import("gsap").TimelineLite;
+type TweenLite = gsap.TweenLite;
+declare var TweenLite: typeof gsap.TweenLite;
+type TimelineLite = gsap.TimelineLite;
+declare var TimelineLite: typeof gsap.TimelineLite;
 declare var Snap: typeof import("snapsvg");
 
 interface SVGAnimateElement {
@@ -255,7 +257,6 @@ function initialize_controls() {
 
 function initialization() {
     countdown = new Countdown();
-    const stopwatch = new Stopwatch(document.getElementById("display") as any);
     initialize_controls();
     countdown.start(10000);
 }

@@ -53,3 +53,5 @@ class Stopwatch {
         })
     }
 }
+
+const stopwatch = new Stopwatch(document.getElementById("display") as any);
