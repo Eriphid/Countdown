@@ -8,7 +8,7 @@ class Stopwatch {
         Snap.load("images/stopwatch.svg", fragment => {
             this.snap.append(fragment as any);
             this.display = fragment.select("#display");
-            this.frame = fragment.select("#stopwatch");
+            this.frame = fragment.select("#frame");
 
             countdown.onupdate.add(this.update.bind(this));
             this.vibrate();
@@ -34,15 +34,18 @@ class Stopwatch {
             let matrix = Snap.matrix();
             const r = 0.1;
             let s = 1;
+
             if (countdown.state === "stopped") {
                 s = 1
             }
             else if (time > 1000) {
-                const t = Math.max(0, time % 1000 - 500) / 500;
+                const d = 500;
+                const t = Math.max(0, time % 1000 - 1000 + d) / d;
                 s = 1 - (r / 2) + t * r;
             }
             else {
-                const t = Math.max(0, time % 1000 - 750) / 250;
+                const d = 250;
+                const t = Math.max(0, time % 1000 - 1000 + d) / d;
                 s = 1 + (t * r) / 2;
             }
             matrix.scale(s, s, 305, 328);
