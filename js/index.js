@@ -1,4 +1,4 @@
-var countdown;
+let countdown;
 const SVGPath = {
     play: "m 0 0 l 5 2.5 l 0 5 l -5 2.5 z M 5 2.5 l 5 2.5 l 0 0 l -5 2.5 z",
     pause: "m 0 0 l 4 0 l 0 10 l -4 0 z M 6 0 l 4 0 l 0 10 l -4 0 z",
@@ -51,6 +51,7 @@ class Countdown {
     constructor() {
         this.onupdate = new CallbackGroup(this);
         this.onstatechanged = new CallbackGroup(this);
+        this.onend = new CallbackGroup();
         let ticker;
         let timestamp;
         const properties = {
@@ -66,8 +67,10 @@ class Countdown {
                 this.value = this.value - (timestamp - old_timestamp);
                 if (this.value <= 0) {
                     this.value = 0;
-                    this.pause();
+                    ticker.pause();
+                    this.state = "stopped";
                     timestamp = null;
+                    this.onend.call();
                 }
             };
             ticker.onnewframe.add(frame_handler);
@@ -90,7 +93,7 @@ class Countdown {
             }
         };
         this.stop = () => {
-            this.pause();
+            ticker.pause();
             pause_timestamp = null;
             this.state = "stopped";
             this.value = this.duration;
@@ -128,6 +131,8 @@ class Countdown {
             state: {
                 get: () => properties.state,
                 set: (value) => {
+                    if (value === properties.state)
+                        return;
                     properties.state = value;
                     this.onstatechanged.call(value);
                 }

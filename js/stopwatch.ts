@@ -30,7 +30,6 @@ class Stopwatch {
     }
 
     vibrate() {
-        const bbox = this.display.getBBox();
         countdown.onupdate.add(time => {
             let matrix = Snap.matrix();
             const r = 0.1;
@@ -38,15 +37,15 @@ class Stopwatch {
             if (countdown.state === "stopped") {
                 s = 1
             }
-            else if (time < 1000) {
-                const t = Math.max(0, time % 1000 - 750) / 250;
-                s = 1 + (t * r) / 2;
-            }
-            else {
+            else if (time > 1000) {
                 const t = Math.max(0, time % 1000 - 500) / 500;
                 s = 1 - (r / 2) + t * r;
             }
-            matrix.scale(s, s, bbox.cx + 112, bbox.cy + 220);
+            else {
+                const t = Math.max(0, time % 1000 - 750) / 250;
+                s = 1 + (t * r) / 2;
+            }
+            matrix.scale(s, s, 305, 328);
             this.frame.transform(matrix.toTransformString());
         })
     }

@@ -10,7 +10,7 @@ interface NodeListOf<TNode extends Node> {
     [Symbol.iterator](): Iterator<TNode>
 }
 
-var countdown: Countdown;
+let countdown: Countdown;
 
 const SVGPath = {
     play: "m 0 0 l 5 2.5 l 0 5 l -5 2.5 z M 5 2.5 l 5 2.5 l 0 0 l -5 2.5 z",
@@ -78,6 +78,7 @@ class Countdown {
 
     onupdate = new CallbackGroup<(time: DOMHighResTimeStamp) => any>(this);
     onstatechanged = new CallbackGroup<(state: "runing" | "paused" | "stopped") => any>(this);
+    onend = new CallbackGroup();
 
     /**start the countdown
     @param value time in milliseconds
@@ -112,8 +113,10 @@ class Countdown {
                 this.value = this.value - (timestamp - old_timestamp);
                 if (this.value <= 0) {
                     this.value = 0;
-                    this.pause();
+                    ticker.pause();
+                    this.state = "stopped";
                     timestamp = null;
+                    this.onend.call();
                 }
             };
 
@@ -142,7 +145,7 @@ class Countdown {
         }
 
         this.stop = () => {
-            this.pause();
+            ticker.pause();
             pause_timestamp = null;
             this.state = "stopped";
             this.value = this.duration;
@@ -181,6 +184,7 @@ class Countdown {
             state: {
                 get: () => properties.state,
                 set: (value) => {
+                    if(value === properties.state) return;
                     properties.state = value;
                     this.onstatechanged.call(value);
                 }
