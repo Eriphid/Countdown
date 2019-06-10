@@ -27,6 +27,7 @@
 
 #popup input[type="text"]
 {
+    text-align: center;
     min-width: 400px;
     border-radius: 5px;
     height: 1.5rem;
