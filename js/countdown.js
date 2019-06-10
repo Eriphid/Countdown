@@ -1,9 +1,4 @@
 let countdown;
-const SVGPath = {
-    play: "m 0 0 l 5 2.5 l 0 5 l -5 2.5 z M 5 2.5 l 5 2.5 l 0 0 l -5 2.5 z",
-    pause: "m 0 0 l 4 0 l 0 10 l -4 0 z M 6 0 l 4 0 l 0 10 l -4 0 z",
-    stop: "m 0 0 l 10 0 l 0 10 l -10 0 z"
-};
 class CallbackGroup {
     constructor(thisArg = null) {
         this.callbacks = [];
@@ -140,55 +135,5 @@ class Countdown {
         });
     }
 }
-function initialize_controls() {
-    const control_group = document.body.querySelector(".controls");
-    let btnmap = new Map();
-    function set_role(btn, role) {
-        if (btn.btn.dataset.role === role)
-            return;
-        btn.btn.dataset.role = role;
-        btn.shape.animate({
-            d: SVGPath[role]
-        }, 300, mina.linear);
-    }
-    const handlers = {
-        play: (el) => {
-            countdown.resume();
-        },
-        pause: (el) => {
-            countdown.pause();
-        },
-        stop: (el) => {
-            countdown.stop();
-        }
-    };
-    {
-        const buttons = control_group.querySelectorAll("button[data-role]");
-        for (let btn of buttons) {
-            const svg_element = btn.appendChild(document.createElementNS("http://www.w3.org/2000/svg", "svg"));
-            const role = btn.dataset.role;
-            const s = Snap(svg_element);
-            btn.addEventListener("click", () => handlers[btn.dataset.role]());
-            s.attr({
-                viewBox: "0 0 10 10"
-            });
-            const shape = s.path(SVGPath[role]);
-            btnmap.set(role, {
-                btn: btn,
-                snap: s,
-                shape: shape
-            });
-        }
-    }
-    countdown.onstatechanged.add((state) => {
-        const play = btnmap.get("play");
-        set_role(play, state === "runing" ? "pause" : "play");
-    });
-    countdown.onupdate.add(value => btnmap.get("play").btn.disabled = value <= 0);
-}
-function initialization() {
-    countdown = new Countdown();
-    initialize_controls();
-    countdown.start(10000);
-}
-initialization();
+countdown = new Countdown();
+countdown.start(10000);
