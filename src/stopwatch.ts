@@ -75,42 +75,32 @@ class Stopwatch {
         let i = -1;
         countdown.onupdate.add(time => {
             let matrix = Snap.matrix();
-            const r = 0.1;
-            let s = 1;
 
             // Scale according to the value of milliseconds
-            let t = 0;
+
             // Do not scale if the countdown is stopped
-            if (countdown.state === "stopped") {
-                s = 1
-            }
-            // Do not scale down if the countdown is about to be stopped
-            else if (time > 1000) {
+            if (countdown.state !== "stopped") {
                 const d = 500;
-                t = Math.max(0, time % 1000 - 1000 + d) / d;
-                s = 1 - (r / 2) + t * r;
-            }
-            else {
-                const d = 250;
-                t = Math.max(0, time % 1000 - 1000 + d) / d;
-                s = 1 + (t * r) / 2;
-            }
-
-            // Check if a new second began
-            if (t > t_old) {
-                // Play a sound and advance i to the next one
-                const audio = audios[i = ++i % audios.length];
-                if (audio) {
-                    audio.currentTime = 0;
-                    audio.volume = 0.25;
-                    audio.play().catch(console.error);
+                const t = Math.max(0, time % 1000 - 1000 + d) / d;
+                const r = 0.1;
+                const s = 1 + t * r;
+                
+                // Scale the stopwatch from the center of the display
+                matrix.scale(s, s, 305, 328);
+                this.frame.transform(matrix.toTransformString());
+                // Check if a new second began
+                if (t > t_old) {
+                    // Play a sound and advance i to the next one
+                    const audio = audios[i = ++i % audios.length];
+                    if (audio) {
+                        audio.currentTime = 0;
+                        audio.volume = 0.25;
+                        audio.play().catch(console.error);
+                    }
                 }
+                t_old = t;
             }
-            t_old = t;
 
-            // Scale the stopwatch from the center of the display
-            matrix.scale(s, s, 305, 328);
-            this.frame.transform(matrix.toTransformString());
         })
     }
 }

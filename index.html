@@ -17,6 +17,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/latest/plugins/TextPlugin.min.js" defer></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/latest/easing/EasePack.min.js" defer></script>
     <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/popup.css">
 </head>
 
 <body>
@@ -32,6 +33,13 @@
                 <div class="controls">
                     <button data-role="play"></button>
                     <button data-role="stop"></button>
+                </div>
+            </div>
+            <div id="popup" class="overlay">
+                <div class="content">
+                    <h2>How long are you willing to wait?</h2>
+                    <input type="text" name="time" id="time" />
+                    <button>OK</button>
                 </div>
             </div>
         </main>
