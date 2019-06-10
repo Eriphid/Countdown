@@ -71,8 +71,6 @@ class Ticker {
 }
 
 class Countdown {
-    element: HTMLElement
-
     // Time is in milliseconds
 
     // Fired every frame with the value of countdown

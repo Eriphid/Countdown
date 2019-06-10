@@ -8,23 +8,17 @@
         const control_group = document.body.querySelector(".controls");
         let btnmap = new Map();
         function set_role(btn, role) {
-            if (btn.btn.dataset.role === role)
+            if (btn.element.dataset.role === role)
                 return;
-            btn.btn.dataset.role = role;
+            btn.element.dataset.role = role;
             btn.shape.animate({
                 d: SVGPath[role]
             }, 300, mina.linear);
         }
         const handlers = {
-            play: (el) => {
-                countdown.resume();
-            },
-            pause: (el) => {
-                countdown.pause();
-            },
-            stop: (el) => {
-                countdown.stop();
-            }
+            play: (el) => countdown.resume(),
+            pause: (el) => countdown.pause(),
+            stop: (el) => countdown.stop()
         };
         {
             const buttons = control_group.querySelectorAll("button[data-role]");
@@ -38,8 +32,7 @@
                 });
                 const shape = s.path(SVGPath[role]);
                 btnmap.set(role, {
-                    btn: btn,
-                    snap: s,
+                    element: btn,
                     shape: shape
                 });
             }
@@ -49,7 +42,9 @@
             set_role(play, state === "runing" ? "pause" : "play");
         };
         countdown.onstatechanged.add(statehandler);
-        countdown.onupdate.add(value => btnmap.get("play").btn.disabled = value <= 0);
+        // Disable play/pause button when coutdown reach 0
+        // Enable it otherwise
+        countdown.onupdate.add(value => btnmap.get("play").element.disabled = value <= 0);
         statehandler(countdown.state);
     }
     initialize();

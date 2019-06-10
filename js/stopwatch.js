@@ -4,7 +4,6 @@ class Stopwatch {
         const div = Snap(element);
         Snap.load("images/stopwatch.svg", fragment => {
             div.append(fragment);
-            this.snap = div.select("svg");
             let display = {
                 mm: fragment.select("#mm"),
                 ss: fragment.select("#ss"),
@@ -15,6 +14,7 @@ class Stopwatch {
                 let digits = this.display[key] = [];
                 digits[0] = display[key].select(":last-child");
                 digits[1] = display[key].select(":first-child");
+                // Move text anchor to end so that number stay align to left when digit is small (like "1")
                 for (let i = 0; i < 2; ++i) {
                     let bbox = digits[i].node.getBBox();
                     digits[i] = digits[i].attr({

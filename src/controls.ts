@@ -6,8 +6,7 @@
     }
 
     interface Control {
-        btn: HTMLButtonElement,
-        snap: Snap.Element,
+        element: HTMLButtonElement,
         shape: Snap.Element
     }
 
@@ -16,23 +15,17 @@
         let btnmap = new Map<string, Control>();
 
         function set_role(btn: Control, role: keyof typeof SVGPath) {
-            if (btn.btn.dataset.role === role) return;
-            btn.btn.dataset.role = role;
+            if (btn.element.dataset.role === role) return;
+            btn.element.dataset.role = role;
             btn.shape.animate({
                 d: SVGPath[role]
             }, 300, mina.linear);
         }
 
         const handlers = {
-            play: (el: HTMLElement) => {
-                countdown.resume()
-            },
-            pause: (el: HTMLElement) => {
-                countdown.pause();
-            },
-            stop: (el: HTMLElement) => {
-                countdown.stop()
-            }
+            play: (el: HTMLElement) => countdown.resume(),
+            pause: (el: HTMLElement) => countdown.pause(),
+            stop: (el: HTMLElement) => countdown.stop()
         }
 
         {
@@ -49,8 +42,7 @@
                 })
                 const shape = s.path(SVGPath[role]);
                 btnmap.set(role, {
-                    btn: btn,
-                    snap: s,
+                    element: btn,
                     shape: shape
                 });
             }
@@ -61,7 +53,9 @@
         }
 
         countdown.onstatechanged.add(statehandler);
-        countdown.onupdate.add(value => btnmap.get("play").btn.disabled = value <= 0);
+        // Disable play/pause button when coutdown reach 0
+        // Enable it otherwise
+        countdown.onupdate.add(value => btnmap.get("play").element.disabled = value <= 0);
 
         statehandler(countdown.state);
     }

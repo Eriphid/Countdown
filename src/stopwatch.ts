@@ -1,5 +1,4 @@
 class Stopwatch {
-    snap: Snap.Paper
     display: {
         mm: [Snap.Element, Snap.Element],
         ss: [Snap.Element, Snap.Element],
@@ -12,7 +11,6 @@ class Stopwatch {
         const div = Snap(element);
         Snap.load("images/stopwatch.svg", fragment => {
             div.append(fragment as any);
-            this.snap = div.select("svg") as Snap.Paper;
             let display = {
                 mm: fragment.select("#mm"),
                 ss: fragment.select("#ss"),
@@ -23,6 +21,7 @@ class Stopwatch {
                 let digits: Snap.Element[] = this.display[key] = [];
                 digits[0] = display[key].select(":last-child");
                 digits[1] = display[key].select(":first-child");
+                // Move text anchor to end so that number stay align to left when digit is small (like "1")
                 for (let i = 0; i < 2; ++i) {
                     let bbox = (digits[i].node as any).getBBox();
                     digits[i] = digits[i].attr({
@@ -84,7 +83,7 @@ class Stopwatch {
                 const t = Math.max(0, time % 1000 - 1000 + d) / d;
                 const r = 0.1;
                 const s = 1 + t * r;
-                
+
                 // Scale the stopwatch from the center of the display
                 matrix.scale(s, s, 305, 328);
                 this.frame.transform(matrix.toTransformString());
