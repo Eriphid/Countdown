@@ -1,5 +1,7 @@
 let overlay: HTMLDivElement;
 
+let thunder = [new Audio("audio/thunder-1.mp3"), new Audio("audio/thunder-2.mp3")];
+
 function create_overlay() {
     let overlay = document.body.appendChild(document.createElement("div"));
     overlay.classList.add("overlay");
@@ -35,7 +37,11 @@ function lightning() {
     // });
     const lightning_box = overlay.appendChild(document.createElement("div"));
     function trigger(i: number, delay: number = 0) {
-        timeline.call(() => lightning_box.style.backgroundImage = `url(images/lightning-${i}.png)`, null, null, `+=${Math.max(0, delay / 1000 - 1)}`);
+        timeline.call(() => {
+            lightning_box.style.backgroundImage = `url(images/lightning-${i + 1}.png)`
+            thunder[i].currentTime = 0;
+            thunder[i].play().catch(console.error);
+        }, null, null, `+=${Math.max(0, delay / 1000 - 1)}`);
         timeline.fromTo(lightning_box, 1, {
             opacity: 1
         }, {
@@ -47,8 +53,8 @@ function lightning() {
                 backgroundColor: "rgba(0, 0, 0, 0.95)"
             }, "-=1")
     }
-    trigger(1);
-    trigger(2, 250);
+    trigger(0);
+    trigger(1, 250);
     timeline.call(() => lightning_box.remove());
     return timeline;
 }

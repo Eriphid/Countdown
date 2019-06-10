@@ -44,7 +44,6 @@ class Stopwatch {
         const date = new Date(0);
         date.setUTCMilliseconds(time);
         const pad = (value: number, digits = 2) => value.toString().padStart(digits, "0");
-        console.log(this.display)
         const values = {
             mm: pad(date.getUTCMinutes()),
             ss: pad(date.getUTCSeconds()),
