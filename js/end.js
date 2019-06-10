@@ -18,7 +18,9 @@
         // Simulate a light bulb disfunctioning
         const toggle = (delay = 0) => {
             const opacity = (on = !on) ? on_alpha : off_alpha;
-            timeline.set(overlay, { backgroundColor: `rgba(0, 0, 0, ${opacity})` }, `+=${delay / 1000}`);
+            timeline.set(overlay, {
+                backgroundColor: `rgba(0, 0, 0, ${opacity})`
+            }, `+=${delay / 1000}`);
             if (on) {
                 timeline.call(() => {
                     audio.light.currentTime = 0;
@@ -27,7 +29,7 @@
             }
         };
         // Call toggle() for each value
-        [0, 200, 100, 300, 100, 300, 100, 500, 100, 800].forEach(delay => toggle(delay));
+        [0, 200, 100, 300, 100, 300, 100, 500, 100].forEach(delay => toggle(delay));
         return timeline;
     }
     function lightning() {
@@ -43,14 +45,16 @@
                 audio.thunder[i].play().catch(console.error);
             }, null, null, `+=${Math.max(0, delay / 1000 - 1)}`);
             timeline.fromTo(lightning_box, 1, {
-                opacity: 1
+                opacity: 1,
+                ease: Expo.easeOut
             }, {
                 opacity: 0
             });
-            timeline.fromTo(overlay, 0.4, {
-                backgroundColor: "rgba(0, 0, 0, 0.3)"
+            timeline.fromTo(overlay, 0.8, {
+                backgroundColor: "rgba(0, 0, 0, 0.3)",
+                ease: Expo.easeOut
             }, {
-                backgroundColor: "rgba(0, 0, 0, 0.95)"
+                backgroundColor: "rgba(0, 0, 0, 0.97)"
             }, "-=1");
         }
         trigger(0);
@@ -67,11 +71,15 @@
             backgroundColor: "rgba(0, 0, 0, 0.93)"
         });
         timeline.add(blink(0.93, 0.25));
+        timeline.to(overlay, 0.8, {
+            backgroundColor: "black",
+            ease: Expo.easeOut
+        });
         timeline.add(lightning());
         timeline.add(blink(0, 0.95), "+=1.5");
         timeline.set(overlay, { display: "none" });
         timeline.to(document.body.querySelector("footer"), 0.5, {
-            text: "Is that what we were waiting for? Should we wait more?."
+            text: "Is that what we were waiting for? Should we wait more?"
         });
     });
 })();
