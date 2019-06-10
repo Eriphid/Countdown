@@ -1,3 +1,7 @@
+:root{
+    --white-glow: 0 0 10px white, 0 0 20px white;
+}
+
 #popup {
     display: flex;
     flex-direction: column;
@@ -11,7 +15,7 @@
     background-color: rgba(0, 0, 0, 0.8);
 
     color: aqua;
-    text-shadow: 0 0 10px white, 0 0 20px white;
+    text-shadow: var(--white-glow);
 }
 
 #popup .content {
@@ -28,37 +32,39 @@
     border-radius: 10px;
 }
 
+#popup .content > * {
+    margin: 15px;
+}
+
 #popup input[type="text"]
 {
     text-align: center;
     min-width: 400px;
     border-radius: 5px;
     height: 1.5rem;
-    box-shadow: 0 0 15px white;
+    box-shadow: var(--white-glow);
 
     border:  2px solid #99f7;
 }
 
 #popup input[type="submit"]
 {
-    margin: 10px;
-
     border: 2px solid azure;
     border-radius: 10px;
     height: 2rem;
     width: 200px;
     background-color: azure;
-    box-shadow: 0 0 10px white;
+    box-shadow: var(--white-glow);
 
     outline: none;
 
-    transition: all 0.2s;
+    transition: all 0.8s;
     font-weight: bold;
     color: rgb(30, 10, 50);
     font-family: Roboto;
 }
 
-#popup button:hover
+#popup input[type="submit"]:hover
 {
-    box-shadow: 0 0 15px white, 0 0 120px white;
+    box-shadow: var(--white-glow), 0 0 30px white;
 }

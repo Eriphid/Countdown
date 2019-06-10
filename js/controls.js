@@ -22,7 +22,7 @@
                     countdown.resume();
                 }
                 else {
-                    TweenLite.fromTo(popup, 1, { opacity: 0, display: "inherit" }, { opacity: 1 });
+                    TweenLite.fromTo(popup, 0.5, { opacity: 0, display: "inherit" }, { opacity: 1 });
                 }
             },
             pause: (el) => countdown.pause(),
@@ -66,7 +66,7 @@
         const form = document.getElementById("time-form");
         form.addEventListener("submit", (ev) => {
             ev.preventDefault();
-            TweenLite.to(popup, 1, { opacity: 0, onComplete: () => popup.style.display = "none " });
+            TweenLite.to(popup, 0.8, { opacity: 0, onComplete: () => popup.style.display = "none " });
             const value = document.getElementById("time-input").value;
             const match = /^(?:(?:(\d{1,2}):)?(\d{1,2}):)?(\d{1,2})$/.exec(value.trim());
             const hh = parseInt(match[1]), mm = parseInt(match[2]);
