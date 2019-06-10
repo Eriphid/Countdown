@@ -9,12 +9,12 @@ function create_overlay() {
     return overlay;
 }
 
-function blink() {
+function blink(on_alpha: number, off_alpha: number) {
     const audio = new Audio("audio/light.ogg");
     const timeline = new TimelineLite();
     let on = false;
     const toggle = (delay: number = 0) => {
-        const opacity = (on = !on) ? 0.93 : 0.25;
+        const opacity = (on = !on) ? on_alpha : off_alpha;
         timeline.set(overlay, { backgroundColor: `rgba(0, 0, 0, ${opacity})` }, `+=${delay / 1000}`);
         if (on) {
             timeline.call(() => {
@@ -66,12 +66,16 @@ countdown.onend.add(() => {
     const timeline = new TimelineLite();
     timeline.set(overlay, {
         display: "block",
-        opacity: 1
+        backgroundColor: "rgba(0, 0, 0, 0.93)"
     })
 
-    timeline.add(blink());
+    timeline.add(blink(0.93, 0.25));
     timeline.add(lightning());
 
-    timeline.to(overlay, 0.2, { opacity: 0 }, "+=0.5");
+    // timeline.to(overlay, 0.2, { opacity: 0 }, "+=0.5");
+    timeline.add(blink(0, 0.95), "+=2");
     timeline.set(overlay, { display: "none" });
+    timeline.to(document.body.querySelector("footer"), 0.5, {
+        text: "Oh! So that's what we were waiting for."
+    })
 })

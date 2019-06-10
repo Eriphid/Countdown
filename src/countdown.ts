@@ -3,6 +3,7 @@ declare var TweenLite: typeof gsap.TweenLite;
 type TimelineLite = gsap.TimelineLite;
 declare var TimelineLite: typeof gsap.TimelineLite;
 declare var Snap: typeof import("snapsvg");
+declare var Linear: typeof gsap.Linear
 
 interface SVGAnimateElement {
     beginElement(): void
