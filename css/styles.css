@@ -5,6 +5,11 @@
     font-weight: bold;
     src: url(../fonts/DS-DIGIB.TTF);
 }
+@font-face {
+    font-family: "DS-Digital";
+    font-weight: normal;
+    src: url(../fonts/DS-DIGI.TTF);
+}
 
 :root {
     --background-color: #333c;
