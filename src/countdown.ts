@@ -27,6 +27,12 @@ class CallbackGroup<Callback extends Function>
         this.callbacks.push(...callbacks);
     }
 
+    remove(callback: Callback)
+    {
+        const i = this.callbacks.indexOf(callback);
+        if(i >= 0) this.callbacks.splice(i, 1);
+    }
+
     constructor(thisArg = null) {
         this.thisArg = thisArg;
     }

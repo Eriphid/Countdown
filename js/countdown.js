@@ -10,6 +10,11 @@ class CallbackGroup {
     add(...callbacks) {
         this.callbacks.push(...callbacks);
     }
+    remove(callback) {
+        const i = this.callbacks.indexOf(callback);
+        if (i >= 0)
+            this.callbacks.splice(i, 1);
+    }
 }
 // Call the "onnewframe" callback every frame
 class Ticker {

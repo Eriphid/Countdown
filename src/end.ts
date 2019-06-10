@@ -2,6 +2,7 @@ declare var Expo: typeof gsap.Expo;
 
 (function () {
     let overlay: HTMLDivElement;
+    const footer = document.body.querySelector("footer");
 
     const audio = {
         thunder: [new Audio("audio/thunder-1.mp3"), new Audio("audio/thunder-2.mp3")],
@@ -90,8 +91,16 @@ declare var Expo: typeof gsap.Expo;
 
         timeline.add(blink(0, 0.95), "+=1.5");
         timeline.set(overlay, { display: "none" });
-        timeline.to(document.body.querySelector("footer"), 0.5, {
+        timeline.to(footer, 0.5, {
             text: "Is that what we were waiting for? Should we wait more?"
         })
-    })
+
+    });
+
+    const once = () => {
+        countdown.onreset.add(() => TweenLite.to(footer, 0.5, { text: "Let's wait a little more..." }));
+        countdown.onend.remove(once);
+    };
+
+    countdown.onend.add(once);
 })();
