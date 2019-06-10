@@ -49,19 +49,29 @@ class Stopwatch {
             });
         }
     }
-    vibrate() {
+    start_scale_animation() {
         let t_old = 0;
-        const audios = [new Audio("audio/B1.mp3"), new Audio("audio/Ab2.mp3"), new Audio("audio/B2.mp3"), new Audio("audio/Ab4.mp3"), new Audio("audio/Ab3.mp3"), new Audio("audio/Db2.mp3")];
-        // audios.forEach(audio => audio.volume = 0.25);
+        // The different sound play each seconds alternatively
+        const audios = [
+            new Audio("audio/B1.mp3"),
+            new Audio("audio/Ab2.mp3"),
+            new Audio("audio/B2.mp3"),
+            new Audio("audio/Ab4.mp3"),
+            new Audio("audio/Ab3.mp3"),
+            new Audio("audio/Db2.mp3")
+        ];
         let i = -1;
         countdown.onupdate.add(time => {
             let matrix = Snap.matrix();
             const r = 0.1;
             let s = 1;
+            // Scale according to the value of milliseconds
             let t = 0;
+            // Do not scale if the countdown is stopped
             if (countdown.state === "stopped") {
                 s = 1;
             }
+            // Do not scale down if the countdown is about to be stopped
             else if (time > 1000) {
                 const d = 500;
                 t = Math.max(0, time % 1000 - 1000 + d) / d;
@@ -72,7 +82,9 @@ class Stopwatch {
                 t = Math.max(0, time % 1000 - 1000 + d) / d;
                 s = 1 + (t * r) / 2;
             }
+            // Check if a new second began
             if (t > t_old) {
+                // Play a sound and advance i to the next one
                 const audio = audios[i = ++i % audios.length];
                 if (audio) {
                     audio.currentTime = 0;
@@ -81,6 +93,7 @@ class Stopwatch {
                 }
             }
             t_old = t;
+            // Scale the stopwatch from the center of the display
             matrix.scale(s, s, 305, 328);
             this.frame.transform(matrix.toTransformString());
         });
@@ -89,5 +102,5 @@ class Stopwatch {
 (function () {
     const stopwatch = new Stopwatch(document.getElementById("display"));
     countdown.onupdate.add(stopwatch.update.bind(stopwatch));
-    stopwatch.onload.add(stopwatch.vibrate.bind(stopwatch));
+    stopwatch.onload.add(stopwatch.start_scale_animation.bind(stopwatch));
 })();

@@ -81,7 +81,7 @@
         timeline.add(blink(0, 0.95), "+=1.5");
         timeline.set(overlay, { display: "none" });
         timeline.to(document.body.querySelector("footer"), 0.5, {
-            text: "Oh! So that's what we were waiting for."
+            text: "Is that what we were waiting for? Should we wait more?."
         })
     })
 })();

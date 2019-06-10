@@ -11,6 +11,7 @@ class CallbackGroup {
         this.callbacks.push(...callbacks);
     }
 }
+// Call the "onnewframe" callback every frame
 class Ticker {
     constructor() {
         this.onnewframe = new CallbackGroup(this);
@@ -44,6 +45,8 @@ class Ticker {
 }
 class Countdown {
     constructor() {
+        // Time is in milliseconds
+        // Fired every frame with the value of countdown
         this.onupdate = new CallbackGroup(this);
         this.onstatechanged = new CallbackGroup(this);
         this.onend = new CallbackGroup();
@@ -57,14 +60,19 @@ class Countdown {
         const initialize_ticker = () => {
             ticker = new Ticker();
             const frame_handler = () => {
+                // Calculate the time elapsed since the last frame
                 const old_timestamp = timestamp;
                 timestamp = performance.now();
+                // Decrease the countdown's value accordingly
                 this.value = this.value - (timestamp - old_timestamp);
+                // Check if the countdown ended
                 if (this.value <= 0) {
+                    // Make sure the value is not negative
                     this.value = 0;
                     ticker.pause();
                     this.state = "stopped";
                     timestamp = null;
+                    // Notify the countdown's end
                     this.onend.call();
                 }
             };
