@@ -11,7 +11,7 @@
     background-color: rgba(0, 0, 0, 0.8);
 
     color: aqua;
-    text-shadow: 0 0 5px white;
+    text-shadow: 0 0 10px white, 0 0 20px white;
 }
 
 #popup .content {
