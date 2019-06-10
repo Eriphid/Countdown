@@ -35,7 +35,7 @@
     border:  2px solid #99f7;
 }
 
-#popup button
+#popup input[type="submit"]
 {
     margin: 10px;
 

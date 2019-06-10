@@ -13,6 +13,7 @@
     function initialize() {
         const control_group = document.body.querySelector(".controls");
         let btnmap = new Map<string, Control>();
+        const popup = document.getElementById("popup");
 
         function set_role(btn: Control, role: keyof typeof SVGPath) {
             if (btn.element.dataset.role === role) return;
@@ -23,7 +24,13 @@
         }
 
         const handlers = {
-            play: (el: HTMLElement) => countdown.resume(),
+            play: (el: HTMLElement) => {
+                if (countdown.duration) {
+                    countdown.resume()
+                } else {
+                    TweenLite.fromTo(popup, 1, { opacity: 0, display: "inherit" }, { opacity: 1 });
+                }
+            },
             pause: (el: HTMLElement) => countdown.pause(),
             stop: (el: HTMLElement) => countdown.stop()
         }
@@ -50,14 +57,38 @@
         const statehandler = (state: typeof countdown.state) => {
             const play = btnmap.get("play");
             set_role(play, state === "runing" ? "pause" : "play");
+            play.element.disabled = (countdown.value <= 0 && countdown.duration > 0);
+            btnmap.get("stop").element.disabled = (state === "stopped" && (countdown.duration == countdown.value));
         }
 
         countdown.onstatechanged.add(statehandler);
         // Disable play/pause button when coutdown reach 0
         // Enable it otherwise
-        countdown.onupdate.add(value => btnmap.get("play").element.disabled = value <= 0);
+        countdown.onreset.add(() => {
+            btnmap.get("play").element.disabled = false;
+            btnmap.get("stop").element.disabled = true;
+        });
+        countdown.onend.add(() => {
+            btnmap.get("play").element.disabled = true;
+            btnmap.get("stop").element.disabled = false;
+        })
 
         statehandler(countdown.state);
+
+        const form = document.getElementById("time-form");
+        form.addEventListener("submit", (ev) => {
+            ev.preventDefault();
+
+            TweenLite.to(popup, 1, { opacity: 0, onComplete: () => popup.style.display = "none " });
+            const value = (document.getElementById("time-input") as HTMLInputElement).value;
+            const match = /^(?:(?:(\d{1,2}):)?(\d{1,2}):)?(\d{1,2})$/.exec(value.trim());
+            const hh = parseInt(match[1]), mm = parseInt(match[2]);
+            let ss = parseInt(match[3]);
+            if (mm) ss += mm * 60;
+            if (hh) ss += hh * 3600;
+
+            countdown.start(ss * 1000);
+        })
     }
 
     initialize();

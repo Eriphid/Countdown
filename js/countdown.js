@@ -49,7 +49,8 @@ class Countdown {
         // Fired every frame with the value of countdown
         this.onupdate = new CallbackGroup(this);
         this.onstatechanged = new CallbackGroup(this);
-        this.onend = new CallbackGroup();
+        this.onend = new CallbackGroup(this);
+        this.onreset = new CallbackGroup(this);
         let ticker;
         let timestamp;
         const properties = {
@@ -96,10 +97,13 @@ class Countdown {
             }
         };
         this.stop = () => {
+            if (!ticker)
+                return;
             ticker.pause();
             pause_timestamp = null;
             this.state = "stopped";
             this.value = this.duration;
+            this.onreset.call();
         };
         this.resume = () => {
             if (!this.value)
@@ -144,4 +148,3 @@ class Countdown {
     }
 }
 countdown = new Countdown();
-countdown.start(10000);

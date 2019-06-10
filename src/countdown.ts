@@ -76,8 +76,12 @@ class Countdown {
     // Fired every frame with the value of countdown
     onupdate = new CallbackGroup<(time: DOMHighResTimeStamp) => any>(this);
     onstatechanged = new CallbackGroup<(state: "runing" | "paused" | "stopped") => any>(this);
-    onend = new CallbackGroup();
+    onend = new CallbackGroup(this);
+    onreset = new CallbackGroup(this);
 
+    /**
+    * @param value Time in millisecond
+    */
     start: (value: number) => void
     duration: number
     value: number
@@ -148,10 +152,12 @@ class Countdown {
         }
 
         this.stop = () => {
+            if(!ticker) return;
             ticker.pause();
             pause_timestamp = null;
             this.state = "stopped";
             this.value = this.duration;
+            this.onreset.call();
         }
         this.resume = () => {
             if (!this.value)
@@ -197,4 +203,3 @@ class Countdown {
 }
 
 countdown = new Countdown();
-countdown.start(10000);
