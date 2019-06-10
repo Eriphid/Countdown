@@ -21,10 +21,10 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    min-width: 80vw;
-    min-height: 80vh;
+    min-width: 40vw;
+    min-height: 40vh;
 
-    background-color: rgba(60, 50, 70, 0.8);
+    background-color: rgba(60, 55, 65, 0.95);
     border-radius: 10px;
 }
 
