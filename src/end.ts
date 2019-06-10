@@ -16,6 +16,10 @@
     function blink(on_alpha: number, off_alpha: number) {
         const timeline = new TimelineLite();
         let on = false;
+
+        // Switch the black overlay's opacity between on_alpha & off_alpha
+        // Play a sound each time opacity is switched to on_alpha
+        // Simulate a light bulb disfunctioning
         const toggle = (delay: number = 0) => {
             const opacity = (on = !on) ? on_alpha : off_alpha;
             timeline.set(overlay, { backgroundColor: `rgba(0, 0, 0, ${opacity})` }, `+=${delay / 1000}`);
@@ -26,6 +30,8 @@
                 })
             }
         }
+
+        // Call toggle() for each value
         [0, 200, 100, 300, 100, 300, 100, 500, 100, 800].forEach(delay => toggle(delay));
         return timeline;
     }
@@ -35,6 +41,8 @@
         timeline.set(overlay, { backgroundColor: "rgba(0, 0, 0, 0.93)" });
         const lightning_box = overlay.appendChild(document.createElement("div"));
         function trigger(i: number, delay: number = 0) {
+            // Set lightning box's background to the specified lightning image
+            // Play a thunder sound
             timeline.call(() => {
                 lightning_box.style.backgroundImage = `url(images/lightning-${i + 1}.png)`
                 audio.thunder[i].currentTime = 0;
@@ -48,8 +56,8 @@
             timeline.fromTo(overlay, 0.4, {
                 backgroundColor: "rgba(0, 0, 0, 0.3)"
             }, {
-                    backgroundColor: "rgba(0, 0, 0, 0.95)"
-                }, "-=1")
+                backgroundColor: "rgba(0, 0, 0, 0.95)"
+            }, "-=1")
         }
         trigger(0);
         trigger(1, 250);
