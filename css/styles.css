@@ -60,7 +60,7 @@ main {
     align-self: stretch;
     flex-grow: 1;
     /* flex-shrink: 1; */
-    height: 300px;
+    flex-basis: 300px;
     justify-content: center;
 }
 
@@ -68,12 +68,18 @@ main {
 {
     height: 100%;
     flex-grow: 1;
+    
+    display: flex;
+    justify-content: stretch;
+    align-items: center;
+    flex-direction: column;
 }
 
 #display svg{
-    height: 100%;
-    width: 100%;
     overflow: visible;
+
+    flex-basis: 400px;
+    flex-grow: 1;
 }
 
 .controls

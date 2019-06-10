@@ -15,10 +15,10 @@ class Stopwatch {
                 digits[0] = display[key].select(":last-child");
                 digits[1] = display[key].select(":first-child");
                 for (let i = 0; i < 2; ++i) {
-                    let bbox = digits[i].getBBox();
+                    let bbox = digits[i].node.getBBox();
                     digits[i] = digits[i].attr({
                         "text-anchor": "end",
-                        x: bbox.width + 20
+                        x: bbox.width
                     });
                 }
             }
