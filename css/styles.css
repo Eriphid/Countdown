@@ -1,5 +1,11 @@
 @import url('https://fonts.googleapis.com/css?family=Roboto:400,700&display=swap');
 
+@font-face{
+    font-family: "DS-Digital";
+    font-weight: bold;
+    src: url(../fonts/DS-DIGIB.TTF);
+}
+
 body {
     margin: 0;
     background-color: #aaa;

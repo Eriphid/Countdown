@@ -17,7 +17,7 @@ function blink() {
         if (on) {
             timeline.call(() => {
                 audio.currentTime = 0;
-                audio.play();
+                audio.play().catch(console.error);
             })
         }
     }
