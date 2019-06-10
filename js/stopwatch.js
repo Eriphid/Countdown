@@ -1,5 +1,6 @@
 class Stopwatch {
     constructor(element) {
+        this.onload = new CallbackGroup(this);
         const div = Snap(element);
         Snap.load("images/stopwatch.svg", fragment => {
             div.append(fragment);
@@ -23,8 +24,7 @@ class Stopwatch {
                 }
             }
             this.frame = fragment.select("#frame");
-            countdown.onupdate.add(this.update.bind(this));
-            this.vibrate();
+            this.onload.call();
         });
     }
     update(time) {
@@ -48,9 +48,6 @@ class Stopwatch {
                 text: val % 10
             });
         }
-        // this.display.attr({
-        //     text: `${hh}:${mm}:${ss}.${ms}`
-        // });
     }
     vibrate() {
         let t_old = 0;
@@ -89,4 +86,8 @@ class Stopwatch {
         });
     }
 }
-const stopwatch = new Stopwatch(document.getElementById("display"));
+(function () {
+    const stopwatch = new Stopwatch(document.getElementById("display"));
+    countdown.onupdate.add(stopwatch.update.bind(stopwatch));
+    stopwatch.onload.add(stopwatch.vibrate.bind(stopwatch));
+})();

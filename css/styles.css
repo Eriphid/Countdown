@@ -6,6 +6,22 @@
     src: url(../fonts/DS-DIGIB.TTF);
 }
 
+:root{
+    --background-color: #333c
+}
+
+#background{
+    position: absolute;
+    z-index: -100;
+    width: 100%;
+    height: 100%;
+    background-image: url(../images/haunted-house.gif);
+    background-size: cover;
+    background-position: center;
+
+    filter: saturate(0.4) brightness(0.4);
+}
+
 body {
     margin: 0;
     background-color: #aaa;
@@ -30,11 +46,12 @@ main {
 }
 
 .title {
+    color: white;
     font-family: Roboto, sans-serif;
     font-weight: bold;
 
     padding: 10px 0;
-    background-color: #ccc;
+    background-color: var(--background-color);
     align-self: stretch;
     text-align: center;
     margin-bottom: 50px;
@@ -66,7 +83,7 @@ main {
 
 #display
 {
-    height: 100%;
+    /* height: 100%; */
     flex-grow: 1;
     
     display: flex;
@@ -78,8 +95,11 @@ main {
 #display svg{
     overflow: visible;
 
-    flex-basis: 400px;
+    flex-basis: 200px;
     flex-grow: 1;
+
+    filter: brightness(0.95);
+    opacity: 0.98;
 }
 
 .controls
@@ -89,14 +109,13 @@ main {
     flex-direction: row;
     justify-content: center;
     align-items: center;
-    flex-shrink: 1;
 
-    /* background-color: #ccc;
+    /* background-color: var(--background-color);
     border-radius: 20px; */
 }
 .controls button
 {
-    background-color: transparent;
+    background-color: var(--background-color);
     margin: 0.5rem;
     transition: filter 0.2s, box-shadow 0.3s;
     border: 1px solid aqua;
@@ -123,15 +142,16 @@ main {
 {
     flex-shrink: 0;
     /* width: 10px; */
-    fill: aqua;
+    fill: #52e2f3ee;
 }
 
 
 
 footer
 {
+    color: white;
     height: 40px;
-    background-color: #ccc;
+    background-color: var(--background-color);
     align-self: stretch;
 
     display: flex;
