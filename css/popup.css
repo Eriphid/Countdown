@@ -1,4 +1,4 @@
-:root{
+:root {
     --white-glow: 0 0 10px white, 0 0 20px white;
 }
 
@@ -16,6 +16,7 @@
 
     color: aqua;
     text-shadow: var(--white-glow);
+
 }
 
 #popup .content {
@@ -30,25 +31,25 @@
 
     background-color: rgba(60, 55, 65, 0.95);
     border-radius: 10px;
+
+    padding: 80px;
 }
 
-#popup .content > * {
+#popup .content>* {
     margin: 15px;
 }
 
-#popup input[type="text"]
-{
+#popup input[type="text"] {
     text-align: center;
     min-width: 400px;
     border-radius: 5px;
     height: 1.5rem;
     box-shadow: var(--white-glow);
 
-    border:  2px solid #99f7;
+    border: 2px solid #99f7;
 }
 
-#popup input[type="submit"]
-{
+#popup input[type="submit"] {
     border: 2px solid azure;
     border-radius: 10px;
     height: 2rem;
@@ -58,13 +59,14 @@
 
     outline: none;
 
-    transition: all 0.8s;
+    transition: box-shadow 0.8s, text-shadow 0.6s;
     font-weight: bold;
     color: rgb(30, 10, 50);
     font-family: Roboto;
+    font-size: 1rem;
 }
 
-#popup input[type="submit"]:hover
-{
+#popup input[type="submit"]:hover {
     box-shadow: var(--white-glow), 0 0 30px white;
+    text-shadow: 0 0 2px black, 0 0 5px black;
 }
