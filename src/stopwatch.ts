@@ -88,7 +88,6 @@ class Stopwatch {
                 matrix.scale(s, s, 305, 328);
                 this.frame.transform(matrix.toTransformString());
                 // Check if a new second began
-                console.log(time, old_time)
                 if (Math.abs(old_time - time) > 1000) {
                     // Play a sound and advance i to the next one
                     const audio = audios[i = ++i % audios.length];
