@@ -133,7 +133,7 @@ main {
 }
 
 .controls button:hover {
-    box-shadow: 0 0 10px aqua, 0 0 20px aqua;
+    box-shadow: 0 0 10px rgb(225, 225, 255), 0 0 20px rgb(225, 225, 255);
 
 }
 

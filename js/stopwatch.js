@@ -50,7 +50,7 @@ class Stopwatch {
         }
     }
     start_scale_animation() {
-        let t_old = 0;
+        let old_time = 0;
         // The different sound play each seconds alternatively
         const audios = [
             new Audio("audio/B1.mp3"),
@@ -74,16 +74,16 @@ class Stopwatch {
                 matrix.scale(s, s, 305, 328);
                 this.frame.transform(matrix.toTransformString());
                 // Check if a new second began
-                if (t > t_old) {
+                console.log(time, old_time);
+                if (Math.abs(old_time - time) > 1000) {
                     // Play a sound and advance i to the next one
                     const audio = audios[i = ++i % audios.length];
                     if (audio) {
                         audio.currentTime = 0;
-                        audio.volume = 0.25;
                         audio.play().catch(console.error);
                     }
+                    old_time = time;
                 }
-                t_old = t;
             }
         });
     }
