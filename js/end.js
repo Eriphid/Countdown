@@ -1,6 +1,7 @@
 (function () {
     let overlay;
     const footer = document.body.querySelector("footer");
+    const lightning_box = document.createElement("div");
     const audio = {
         thunder: [new Audio("audio/thunder-1.mp3"), new Audio("audio/thunder-2.mp3")],
         light: new Audio("audio/light.ogg")
@@ -36,7 +37,7 @@
     function lightning() {
         const timeline = new TimelineLite();
         timeline.set(overlay, { backgroundColor: "rgba(0, 0, 0, 0.93)" });
-        const lightning_box = overlay.appendChild(document.createElement("div"));
+        timeline.call(() => overlay.appendChild(lightning_box));
         function trigger(i, delay = 0) {
             // Set lightning box's background to the specified lightning image
             // Play a thunder sound
@@ -63,10 +64,10 @@
         timeline.call(() => lightning_box.remove());
         return timeline;
     }
-    overlay = create_overlay();
-    overlay.style.display = "none";
-    countdown.onend.add(() => {
-        const timeline = new TimelineLite();
+    function create_timeline() {
+        const timeline = new TimelineLite({
+            paused: true
+        });
         timeline.set(overlay, {
             display: "block",
             backgroundColor: "rgba(0, 0, 0, 0.93)"
@@ -82,6 +83,17 @@
         timeline.to(footer, 0.5, {
             text: "Is that what we were waiting for? Should we wait more?"
         });
+        return timeline;
+    }
+    overlay = create_overlay();
+    overlay.style.display = "none";
+    const timeline = create_timeline();
+    countdown.onend.add(() => {
+        timeline.play(0);
+    });
+    countdown.onstatechanged.add((state) => {
+        if (timeline.isActive() && state === "runing")
+            timeline.render(timeline.endTime());
     });
     const once = () => {
         countdown.onreset.add(() => TweenLite.to(footer, 0.5, { text: "Let's wait a little more..." }));

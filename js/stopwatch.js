@@ -24,28 +24,57 @@ class Stopwatch {
                 }
             }
             this.frame = fragment.select("#frame");
+            const btns = {
+                left: fragment.select("#btn-left"),
+                top: fragment.select("#btn-top"),
+                right: fragment.select("#btn-right")
+            };
+            function add_click_handler(btn, handler, animation = {}) {
+                btn.click((ev) => {
+                    handler(ev);
+                    TweenLite.from(btn.node, 0.2, { x: `+=${animation.x || 0}`, y: `+=${animation.y || 0}` });
+                });
+            }
+            add_click_handler(btns.left, () => {
+                if (countdown.duration > 0)
+                    countdown.resume();
+                else
+                    popup.show();
+            }, { x: 5, y: 5 });
+            add_click_handler(btns.top, () => {
+                countdown.pause();
+                document.getElementById("time-input").value = "";
+                popup.show();
+            }, { y: 5 });
+            add_click_handler(btns.right, countdown.stop.bind(countdown), { x: -5, y: 5 });
             this.onload.call();
         });
     }
     update(time) {
         if (!this.display)
             return;
-        const date = new Date(0);
-        date.setUTCMilliseconds(time);
-        const pad = (value, digits = 2) => value.toString().padStart(digits, "0");
-        const values = {
-            mm: pad(date.getUTCMinutes()),
-            ss: pad(date.getUTCSeconds()),
-            ms: pad(Math.floor(date.getUTCMilliseconds() / 10))
-        };
+        // const pad = (value: number, digits = 2) => value.toString().padStart(digits, "0");
+        // const date = new Date(time);
+        // const values = {
+        //     mm: pad(date.getUTCMinutes()),
+        //     ss: pad(date.getUTCSeconds()),
+        //     ms: pad(Math.floor(date.getUTCMilliseconds() / 10))
+        // }
+        const values = {};
+        values.ms = Math.round(time);
+        values.ss = values.ms / 1000;
+        values.mm = values.ss / 60;
+        values.ms %= 1000;
+        values.mm %= 60;
+        values.ms %= 60;
         for (let key in values) {
             const group = this.display[key];
-            const val = values[key];
+            const val = Math.floor(values[key]).toString().padStart(2, "0");
             group[0].attr({
-                text: Math.floor(val / 10)
+                text: val[0]
             });
             group[1].attr({
-                text: val % 10
+                text: val[1]
             });
         }
     }
@@ -62,7 +91,6 @@ class Stopwatch {
         ];
         let i = -1;
         countdown.onupdate.add(time => {
-            let matrix = Snap.matrix();
             // Scale according to the value of milliseconds
             // Do not scale if the countdown is stopped
             if (countdown.state !== "stopped") {
@@ -70,11 +98,12 @@ class Stopwatch {
                 const t = Math.max(0, time % 1000 - 1000 + d) / d;
                 const r = 0.1;
                 const s = 1 + t * r;
+                let matrix = Snap.matrix();
                 // Scale the stopwatch from the center of the display
                 matrix.scale(s, s, 305, 328);
                 this.frame.transform(matrix.toTransformString());
                 // Check if a new second began
-                if (Math.abs(old_time - time) > 1000) {
+                if (Math.abs(old_time - time) >= 1000) {
                     // Play a sound and advance i to the next one
                     const audio = audios[i = ++i % audios.length];
                     if (audio) {

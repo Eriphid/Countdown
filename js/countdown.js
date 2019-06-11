@@ -87,6 +87,8 @@ class Countdown {
         this.start = (value) => {
             if (!ticker)
                 initialize_ticker();
+            else
+                ticker.resume();
             properties.duration = value;
             this.value = value;
             this.state = "runing";
@@ -111,13 +113,12 @@ class Countdown {
             this.onreset.call();
         };
         this.resume = () => {
-            if (!this.value)
+            if (!this.value || this.state === "runing")
                 return false;
             if (ticker) {
                 ticker.resume();
                 if (pause_timestamp) {
                     timestamp += performance.now() - pause_timestamp;
-                    pause_timestamp = null;
                 }
                 else if (this.duration) {
                     this.start(this.duration);
@@ -129,6 +130,10 @@ class Countdown {
             this.state = "runing";
             return true;
         };
+        this.onstatechanged.add((state) => {
+            if (state !== "paused")
+                pause_timestamp = null;
+        });
         Object.defineProperties(this, {
             duration: {
                 get: () => properties.duration

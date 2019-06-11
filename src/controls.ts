@@ -10,10 +10,42 @@
         shape: Snap.Element
     }
 
-    function initialize() {
-        const control_group = document.body.querySelector(".controls");
+    function create_buttons() {
         let btnmap = new Map<string, Control>();
-        const popup = document.getElementById("popup");
+        const control_group = document.body.querySelector(".controls");
+        const handlers = {
+            play: (el: HTMLElement) => {
+                if (countdown.duration) {
+                    countdown.resume()
+                } else {
+                    popup.show();
+                }
+            },
+            pause: (el: HTMLElement) => countdown.pause(),
+            stop: (el: HTMLElement) => countdown.stop()
+        }
+        const buttons = control_group.querySelectorAll<HTMLButtonElement>("button[data-role]");
+        for (let btn of buttons) {
+            const svg_element = btn.appendChild(document.createElementNS("http://www.w3.org/2000/svg", "svg"));
+            const role = btn.dataset.role;
+            const s = Snap(svg_element);
+
+            btn.addEventListener("click", () => handlers[btn.dataset.role]());
+
+            s.attr({
+                viewBox: "0 0 10 10"
+            })
+            const shape = s.path(SVGPath[role]);
+            btnmap.set(role, {
+                element: btn,
+                shape: shape
+            });
+        }
+        return btnmap;
+    }
+
+    function initialize() {
+        const btnmap = create_buttons();
 
         function set_role(btn: Control, role: keyof typeof SVGPath) {
             if (btn.element.dataset.role === role) return;
@@ -23,37 +55,6 @@
             }, 300, mina.linear);
         }
 
-        const handlers = {
-            play: (el: HTMLElement) => {
-                if (countdown.duration) {
-                    countdown.resume()
-                } else {
-                    TweenLite.fromTo(popup, 0.5, { opacity: 0, display: "inherit" }, { opacity: 1 });
-                }
-            },
-            pause: (el: HTMLElement) => countdown.pause(),
-            stop: (el: HTMLElement) => countdown.stop()
-        }
-
-        {
-            const buttons = control_group.querySelectorAll<HTMLButtonElement>("button[data-role]");
-            for (let btn of buttons) {
-                const svg_element = btn.appendChild(document.createElementNS("http://www.w3.org/2000/svg", "svg"));
-                const role = btn.dataset.role;
-                const s = Snap(svg_element);
-
-                btn.addEventListener("click", () => handlers[btn.dataset.role]());
-
-                s.attr({
-                    viewBox: "0 0 10 10"
-                })
-                const shape = s.path(SVGPath[role]);
-                btnmap.set(role, {
-                    element: btn,
-                    shape: shape
-                });
-            }
-        }
         const statehandler = (state: typeof countdown.state) => {
             const play = btnmap.get("play");
             set_role(play, state === "runing" ? "pause" : "play");
@@ -78,16 +79,7 @@
         const form = document.getElementById("time-form");
         form.addEventListener("submit", (ev) => {
             ev.preventDefault();
-
-            TweenLite.to(popup, 0.8, { opacity: 0, onComplete: () => popup.style.display = "none " });
-            const value = (document.getElementById("time-input") as HTMLInputElement).value;
-            const match = /^(?:(?:(\d{1,2}):)?(\d{1,2}):)?(\d{1,2})$/.exec(value.trim());
-            const hh = parseInt(match[1]), mm = parseInt(match[2]);
-            let ss = parseInt(match[3]);
-            if (mm) ss += mm * 60;
-            if (hh) ss += hh * 3600;
-
-            countdown.start(ss * 1000);
+            popup.submit();
         })
     }
 

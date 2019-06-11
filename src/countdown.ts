@@ -27,10 +27,9 @@ class CallbackGroup<Callback extends Function>
         this.callbacks.push(...callbacks);
     }
 
-    remove(callback: Callback)
-    {
+    remove(callback: Callback) {
         const i = this.callbacks.indexOf(callback);
-        if(i >= 0) this.callbacks.splice(i, 1);
+        if (i >= 0) this.callbacks.splice(i, 1);
     }
 
     constructor(thisArg = null) {
@@ -137,7 +136,10 @@ class Countdown {
         }
 
         this.start = (value: number) => {
-            if (!ticker) initialize_ticker();
+            if (!ticker)
+                initialize_ticker();
+            else
+                ticker.resume();
 
             properties.duration = value;
             this.value = value;
@@ -158,7 +160,7 @@ class Countdown {
         }
 
         this.stop = () => {
-            if(!ticker) return;
+            if (!ticker) return;
             ticker.pause();
             pause_timestamp = null;
             this.state = "stopped";
@@ -166,13 +168,12 @@ class Countdown {
             this.onreset.call();
         }
         this.resume = () => {
-            if (!this.value)
+            if (!this.value || this.state === "runing")
                 return false;
             if (ticker) {
                 ticker.resume();
                 if (pause_timestamp) {
                     timestamp += performance.now() - pause_timestamp;
-                    pause_timestamp = null;
                 }
                 else if (this.duration) {
                     this.start(this.duration);
@@ -184,6 +185,10 @@ class Countdown {
             this.state = "runing";
             return true;
         }
+
+        this.onstatechanged.add((state) => {
+            if(state !== "paused") pause_timestamp = null;
+        })
 
         Object.defineProperties(this, {
             duration: {
@@ -199,7 +204,7 @@ class Countdown {
             state: {
                 get: () => properties.state,
                 set: (value) => {
-                    if(value === properties.state) return;
+                    if (value === properties.state) return;
                     properties.state = value;
                     this.onstatechanged.call(value);
                 }

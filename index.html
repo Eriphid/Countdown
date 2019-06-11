@@ -8,14 +8,15 @@
     <title>Countdown</title>
     <script src="js/countdown.js" defer></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/snap.svg/0.5.1/snap.svg-min.js" defer></script>
+    <script src="js/popup.js" defer></script>
     <script src="js/controls.js" defer></script>
     <script src="js/stopwatch.js" defer></script>
-    <script src="js/end.js" defer></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/latest/TweenLite.min.js" defer></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/latest/TimelineLite.min.js" defer></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/latest/plugins/CSSPlugin.min.js" defer></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/latest/plugins/TextPlugin.min.js" defer></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/latest/easing/EasePack.min.js" defer></script>
+    <script src="js/end.js" defer></script>
     <link rel="stylesheet" href="css/styles.css">
     <link rel="stylesheet" href="css/popup.css">
 </head>
@@ -39,7 +40,7 @@
                 <form action="" id="time-form">
                     <div class="content">
                         <h2>How long are you willing to wait?</h2>
-                        <input type="text" name="time" id="time-input" />
+                        <input type="text" name="time" id="time-input" autocomplete="off" />
                         <input type="submit" value="OK" />
                     </div>
                 </form>
