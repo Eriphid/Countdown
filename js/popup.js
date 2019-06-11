@@ -24,8 +24,8 @@ class Popup {
             // Do not start a timer of 0
             if (ss === 0)
                 return;
-            if (ss > 3600) {
-                ss = 3600;
+            if (ss >= 3600) {
+                ss = 3599.99;
                 console.warn("Duration cannot be over 1 hour");
             }
             this.hide();

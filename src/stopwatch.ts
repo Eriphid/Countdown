@@ -77,7 +77,7 @@ class Stopwatch {
 
         values.ms %= 1000;
         values.mm %= 60;
-        values.ms %= 60;
+        values.ss %= 60;
 
         for (let key in values) {
             const group: Snap.Element[] = this.display[key];
