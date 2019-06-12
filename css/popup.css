@@ -46,7 +46,8 @@
     height: 1.5rem;
     box-shadow: var(--white-glow);
 
-    border: 2px solid #99f7;
+    border: 2px solid #aafa;
+    outline: none;
 }
 
 #popup input[type="submit"] {
