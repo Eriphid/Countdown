@@ -2,12 +2,18 @@ declare var Expo: typeof gsap.Expo;
 
 (function () {
     let overlay: HTMLDivElement;
-    const footer = document.body.querySelector("footer");
+    const footer        = document.body.querySelector("footer");
     const lightning_box = document.createElement("div");
 
+    const lightning_images = [ new Image(), new Image() ];
+
+    for (let i = 0; i < lightning_images.length; i++) {
+        lightning_images[i].src = `images/lightning-${ i + 1 }.png`;
+    }
+
     const audio = {
-        thunder: [new Audio("audio/thunder-1.mp3"), new Audio("audio/thunder-2.mp3")],
-        light: new Audio("audio/light.ogg")
+        thunder: [ new Audio("audio/thunder-1.mp3"), new Audio("audio/thunder-2.mp3") ],
+        light: new Audio("audio/light.ogg"),
     }
 
     function create_overlay() {
@@ -50,8 +56,8 @@ declare var Expo: typeof gsap.Expo;
             // Set lightning box's background to the specified lightning image
             // Play a thunder sound
             timeline.call(() => {
-                lightning_box.style.backgroundImage = `url(images/lightning-${i + 1}.png)`
-                audio.thunder[i].currentTime = 0;
+                lightning_box.style.backgroundImage = `url(${ lightning_images[i].src })`
+                audio.thunder[i].currentTime        = 0;
                 audio.thunder[i].play().catch(console.error);
             }, null, null, `+=${Math.max(0, delay / 1000 - 1)}`);
             timeline.fromTo(lightning_box, 1, {
